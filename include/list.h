@@ -1,3 +1,5 @@
+#pragma once
+
 #include <iostream>
 
 using std::size_t;
@@ -22,6 +24,53 @@ protected:
 	size_t size;
 
 public:
+	class Iterator
+	{
+		Node<T>* current;
+
+	public:
+		Iterator() : current(nullptr) {}
+		Iterator(Node<T>* node) : current(node) {}
+		Iterator(const Node<T>* node) : current(const_cast<Node<T>*>(node)) {}
+		Iterator(const Iterator& it)
+		{
+			current = it.current;
+		}
+
+		Node<T>* get_current() const noexcept
+		{
+			return current;
+		}
+
+		Iterator& operator++()
+		{
+			current = current->next;
+
+			return *this;
+		}
+		Iterator operator++(int)
+		{
+			Iterator tmp = *this;
+
+			++(*this);
+
+			return tmp;
+		}
+
+		T& operator*() const
+		{
+			return current->value;
+		}
+		bool operator==(const Iterator& it) const
+		{
+			return this->current == it.current;
+		}
+		bool operator!=(const Iterator& it) const
+		{
+			return !(*this == it);
+		}
+	};
+
 	List()
 	{
 		first = nullptr;
@@ -37,7 +86,7 @@ public:
 		first = nullptr;
 		size = 0;
 
-		for (Iterator it = other.begin(); it != other.end(); it++)
+		for (Iterator it = other.begin(); it != other.end(); ++it)
 		{
 			push_back(*it);
 		}
@@ -53,11 +102,12 @@ public:
 		{
 			clear();
 
-			for (const Node<T>* it = other.begin(); it != other.end(); it = it->next)
+			for (Iterator it = other.begin(); it != other.end(); ++it)
 			{
-				push_back(it->value);
+				push_back(*it);
 			}
 		}
+
 		return *this;
 	}
 
@@ -70,21 +120,21 @@ public:
 		return size;
 	}
 
-	Node<T>* begin() noexcept
+	typename List<T>::Iterator begin() noexcept
 	{
-		return first;
+		return Iterator(first);
 	}
-	Node<T>* end() noexcept
+	typename List<T>::Iterator begin() const noexcept
 	{
-		return nullptr;
+		return Iterator(first);
 	}
-	const Node<T>* begin() const noexcept
+	typename List<T>::Iterator end() noexcept
 	{
-		return first;
+		return Iterator();
 	}
-	const Node<T>* end() const noexcept
+	typename List<T>::Iterator end() const noexcept
 	{
-		return nullptr;
+		return Iterator();
 	}
 
 	void clear()
@@ -148,23 +198,21 @@ public:
 
 		Node<T>* prev = first;
 
-		while (prev->next != nullptr && prev->next != node)
+		while (prev->next != node)
 		{
+			if (prev->next == nullptr)
+			{
+				throw std::logic_error("Cannot erase: node is not in the list");
+			}
+
 			prev = prev->next;
 		}
 
-		if (prev->next == node)
-		{
-			prev->next = node->next;
+		prev->next = node->next;
 
-			delete node;
+		delete node;
 
-			size--;
-		}
-		else
-		{
-			throw std::logic_error("Cannot erase: node is not in the list");
-		}
+		size--;
 	}
 
 	Node<T>* get_last() const
@@ -186,65 +234,6 @@ public:
 
 	void push_back(T elem)
 	{
-		Node<T>* new_node = new Node<T>(elem, nullptr);
-
-		if (first == nullptr)
-		{
-			first = new_node;
-		}
-		else
-		{
-			get_last()->next = new_node;
-		}
-
-		size++;
+		insert(elem, get_last());
 	}
-
-
-
-	class Iterator
-	{
-		Node<T>* current;
-
-	public:
-		Iterator(Node<T>* node) : current(node) {}
-		Iterator(const Node<T>* node) : current(const_cast<Node<T>*>(node)) {}
-		Iterator(const Iterator& it)
-		{
-			current = it.current;
-		}
-
-		Node<T>* get_current() const noexcept
-		{
-			return current;
-		}
-
-		Iterator& operator++()
-		{
-			current = current->next;
-
-			return *this;
-		}
-		Iterator operator++(int)
-		{
-			Iterator tmp = *this;
-
-			++(*this);
-
-			return tmp;
-		}
-
-		T& operator*() const
-		{
-			return current->value;
-		}
-		bool operator==(const Iterator& it) const
-		{
-			return this->current == it.current;
-		}
-		bool operator!=(const Iterator& it) const
-		{
-			return !(*this == it);
-		}
-	};
 };

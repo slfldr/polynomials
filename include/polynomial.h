@@ -1,3 +1,5 @@
+#pragma once
+
 #include "list.h"
 #include <iostream>
 
@@ -105,9 +107,7 @@ class Polynomial : public List<Term>
 {
 public:
 	Polynomial() {}
-
 	~Polynomial() {}
-
 	Polynomial(const Polynomial& other) : List<Term>(other) {}
 
 	Polynomial& operator=(const Polynomial& other)
@@ -124,27 +124,28 @@ public:
 	{
 		if (t.get_k() == 0) return;
 
-		Node<Term>* prev = nullptr;
-		Node<Term>* curr = first;
+		Iterator prev = end();
+		Iterator curr = begin();
 
-		while (curr && curr->value.get_degree() > t.get_degree())
+		while (curr != end() && (*curr).get_degree() > t.get_degree())
 		{
 			prev = curr;
-			curr = curr->next;
+
+			++curr;
 		}
 
-		if (curr && curr->value.get_degree() == t.get_degree())
+		if (curr != end() && (*curr).get_degree() == t.get_degree())
 		{
-			curr->value.set_k(curr->value.get_k() + t.get_k());
+			(*curr).set_k((*curr).get_k() + t.get_k());
 
-			if (curr->value.get_k() == 0)
+			if ((*curr).get_k() == 0)
 			{
-				erase(curr);
+				erase(curr.get_current());
 			}
 		}
 		else
 		{
-			insert(t, prev);
+			insert(t, prev.get_current());
 		}
 	}
 
@@ -152,9 +153,9 @@ public:
 	{
 		Polynomial res(*this);
 
-		for (Node<Term>* it = p.get_first(); it != nullptr; it = it->next)
+		for (Iterator it = p.begin(); it != p.end(); ++it)
 		{
-			res.add_term(it->value);
+			res.add_term(*it);
 		}
 
 		return res;
@@ -163,9 +164,20 @@ public:
 	{
 		Polynomial res;
 
-		for (Node<Term>* it = first; it != nullptr; it = it->next)
+		for (Iterator it = begin(); it != end(); ++it)
 		{
-			res.add_term(it->value * scalar);
+			res.add_term(*it * scalar);
+		}
+
+		return res;
+	}
+	Polynomial operator*(const Term& t) const
+	{
+		Polynomial res;
+
+		for (Iterator it = begin(); it != end(); ++it)
+		{
+			res.add_term(*it * t);
 		}
 
 		return res;
@@ -174,11 +186,12 @@ public:
 	{
 		Polynomial res;
 
-		for (Node<Term>* it1 = first; it1 != nullptr; it1 = it1->next)
+		for (Iterator it1 = begin(); it1 != end(); ++it1)
 		{
-			for (Node<Term>* it2 = p.get_first(); it2 != nullptr; it2 = it2->next)
+			for (Iterator it2 = p.begin(); it2 != p.end(); ++it2)
 			{
-				Term product = it1->value * it2->value;
+				Term product = *it1 * *it2;
+
 				res.add_term(product);
 			}
 		}
