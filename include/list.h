@@ -196,15 +196,15 @@ public:
 			return;
 		}
 
+		if (node->next == nullptr && node != get_last())
+		{
+			throw std::logic_error("Cannot erase: node is not in the list");
+		}
+
 		Node<T>* prev = first;
 
 		while (prev->next != node)
 		{
-			if (prev->next == nullptr)
-			{
-				throw std::logic_error("Cannot erase: node is not in the list");
-			}
-
 			prev = prev->next;
 		}
 
