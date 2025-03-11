@@ -184,35 +184,23 @@ public:
 	}
 	void erase(Node<T>* node)
 	{
-		if (node == nullptr || first == nullptr)
-		{
-			throw std::logic_error("Cannot erase from an empty list");
-		}
-
-		if (node == first)
+		if (node == nullptr)
 		{
 			pop_front();
-
-			return;
 		}
-
-		if (node->next == nullptr && node != get_last())
+		else
 		{
-			throw std::logic_error("Cannot erase: node is not in the list");
+			Node<T>* temp = node->next;
+
+			if (temp != nullptr)
+			{
+				node->next = temp->next;
+
+				delete temp;
+
+				size--;
+			}
 		}
-
-		Node<T>* prev = first;
-
-		while (prev->next != node)
-		{
-			prev = prev->next;
-		}
-
-		prev->next = node->next;
-
-		delete node;
-
-		size--;
 	}
 
 	Node<T>* get_last() const

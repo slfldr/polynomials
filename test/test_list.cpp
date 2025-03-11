@@ -57,7 +57,7 @@ TEST(list_test, erase)
     list.push_back(2);
     list.push_back(3);
 
-    Node<int>* node = list.get_first()->next;
+    Node<int>* node = list.get_first();
 
     list.erase(node);
 
@@ -140,7 +140,9 @@ TEST(list_test, erase_node_not_in_list)
 
     Node<int>* node = new Node<int>(3);
 
-    EXPECT_THROW(list.erase(node), std::logic_error);
+    EXPECT_NO_THROW(list.erase(node));
+
+    delete node;
 }
 
 TEST(list_test, erase_from_empty_list)
@@ -185,7 +187,7 @@ TEST(list_test, erase_last_element)
 
     list.push_back(1);
 
-    list.erase(list.get_first());
+    list.erase(nullptr);
 
     EXPECT_EQ(list.get_size(), 0);
     EXPECT_EQ(list.get_first(), nullptr);
