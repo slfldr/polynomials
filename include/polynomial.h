@@ -122,14 +122,17 @@ public:
 
 	void add_term(const Term& t)
 	{
-		if (t.get_k() == 0) return;
+		if (t.get_k() == 0)
+		{
+			return;
+		}
 
-		Iterator prev = end();
 		Iterator curr = begin();
+		Node<Term>* prev = nullptr;
 
 		while (curr != end() && (*curr).get_degree() > t.get_degree())
 		{
-			prev = curr;
+			prev = curr.get_current();
 
 			++curr;
 		}
@@ -145,7 +148,7 @@ public:
 		}
 		else
 		{
-			insert(t, prev.get_current());
+			insert(t, prev);
 		}
 	}
 

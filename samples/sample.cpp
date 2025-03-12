@@ -5,12 +5,39 @@
 
 void print_polynomial(const Polynomial& p)
 {
+    bool first = true;
+
     for (auto it = p.begin(); it != p.end(); ++it)
     {
-        std::cout << (*it).get_k() << "x^" << (*it).get_x_degree()
-            << "y^" << (*it).get_y_degree()
-            << "z^" << (*it).get_z_degree();
+        if (!first)
+        {
+            std::cout << " + ";
+        }
+
+        std::cout << (*it).get_k();
+
+        if ((*it).get_x_degree() > 0)
+        {
+            std::cout << "x^" << (*it).get_x_degree();
+        }
+        if ((*it).get_y_degree() > 0)
+        {
+            std::cout << "y^" << (*it).get_y_degree();
+        }
+        if ((*it).get_z_degree() > 0)
+        {
+            std::cout << "z^" << (*it).get_z_degree();
+        }
+
+        first = false;
     }
+
+    if (first)
+    {
+        std::cout << "0";
+    }
+
+    std::cout << std::endl;
 }
 
 Term get_term_from_user()

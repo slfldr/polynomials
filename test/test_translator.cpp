@@ -250,8 +250,10 @@ TEST(polynomial_test, multiply_polynomial_by_scalar)
 TEST(polynomial_test, multiply_polynomial_by_zero)
 {
     Polynomial p;
+
     Term t1(123, 2.0);
     Term t2(124, 3.0);
+
     p.add_term(t1);
     p.add_term(t2);
 
